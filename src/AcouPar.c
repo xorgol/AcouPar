@@ -13,25 +13,55 @@
 int main(int argc, char** argv)
 {
     MLS* lpAmp;
+    int* stereoMode;
     char* filename;
     char* txtname;
     // FILE* FP;
-    float fAP[NPAR * NBANDS * 2]; // parametri acustici    
-    char  cAP[NPAR * NBANDS * 2 + NBANDS]; // validità o meno dei parametri acustici
+    float fAP[NPAR * NBANDS * 2]; // parametri acustici
+    char  cAP[NPAR * NBANDS * 2 + NBANDS]; // validitï¿½ o meno dei parametri acustici
     char ok = 1;
-
+    
     lpAmp = (MLS*)malloc((size_t)sizeof(MLS)); //Structure containing all data
     filename = (char*)malloc(sizeof(char) * 1024);
     txtname = (char*)malloc(sizeof(char) * 1024);
-
-    if (filename == NULL) 
+    
+    if (filename == NULL)
     {
         printf("Error in mallocn");
         exit(1);
     }
+    
+    // Parse input arguments
+    if (argc != 3) {
+        printf("Two input arguments are expected.\n");
+        exit(1);
+    }
+    
+    if (strcmp(argv[1], "--omni") == 0) {
+        stereoMode = 0;
+        printf("Omni elaboration applied.\n");
+    } else if (strcmp(argv[1], "--wy") == 0) {
+        stereoMode = 1;
+        printf("Soundfield WY elaboration applied.\n");
+    } else if (strcmp(argv[1], "--pu") == 0){
+        stereoMode = 2;
+        printf("Omni/FigureOfEight PU Pressure-Velocity elaboration applied.\n");
+    } else if (strcmp(argv[1], "--pp") == 0){
+        stereoMode = 3;
+        printf("P-P probe elaboration applied.\n");
+    } else if (strcmp(argv[1], "--bin") == 0){
+        stereoMode = 4;
+        printf("Binaural elaboration applied.\n");
+    } else {
+        printf("Unknown option: %s\n", argv[1]);
+        printf("The stereo mode option must be one from "
+               "--omni, --wy, --pu, --pp or --bin.\n");
+        exit(1);
+    }
+    //0=2 mono mikes, 1=Soundfield WY, 2=Omni/Eight PU, 3=p-p probe, 4=binaural
 
     // get file name tobe analyzed from command line
-    strcpy(filename, argv[1]);
+    strcpy(filename, argv[2]);
 
     printf("\nTry opening %s \n",filename);
         drwav wav;
@@ -99,22 +129,22 @@ int main(int argc, char** argv)
         lpAmp->ref11 = 77.0;  // Liv. riferimento sorgente a 10m - A
         lpAmp->ref12 = 79.0;  // Liv. riferimento sorgente a 10m - LIN
 
-        lpAmp->Distance = 10.0;    //m  - reference distance for G
-        lpAmp->Space = 120;       //mm - p-p probe mic spacing
-        lpAmp->Speed = 340.0;      //m/s - speed of sound
-        lpAmp->fThreshold = -20.0; //dB - Threshold for detecting the peak of direct sound
-        lpAmp->fRTUdBstart = -5.0; //dB - start point for RT-user
-        lpAmp->fRTUdBend = -15.0;  //dB - end point for RT-user
-        lpAmp->StereoMode=0; // 0=2 mono mikes, 1=Soundfield WY, 2=Omni/Eight PU, 3=p-p probe, 4=binaural
-        lpAmp->IACCmode=0;   // 0=Early, 1=Late, 2=Whole
-        lpAmp->StageMode=0;  // 0=Normal, 1=Stage (compute ST instead of ts,D)
-        lpAmp->AVGmode=0;	// 0=Normal, 1=Average Mode , 250 to 2k
-        lpAmp->AppendMode=1; // 0=not append, 1=append
-        lpAmp->White2Pink=0; // 0=leave unchanged, 1=correct
-        lpAmp->fFS = 120.0;  // Full Scale in dB-SPL
-        lpAmp->lSampRate = wav.sampleRate;
-        lpAmp->lN = IRL;
-        lpAmp->wChannels = wav.channels;
+        lpAmp->Distance     = 10.0;    //m  - reference distance for G
+        lpAmp->Space        = 120;       //mm - p-p probe mic spacing
+        lpAmp->Speed        = 340.0;      //m/s - speed of sound
+        lpAmp->fThreshold   = -20.0; //dB - Threshold for detecting the peak of direct sound
+        lpAmp->fRTUdBstart  = -5.0; //dB - start point for RT-user
+        lpAmp->fRTUdBend    = -15.0;  //dB - end point for RT-user
+        lpAmp->StereoMode   = stereoMode; // 0=2 mono mikes, 1=Soundfield WY, 2=Omni/Eight PU, 3=p-p probe, 4=binaural
+        lpAmp->IACCmode     = 0;   // 0=Early, 1=Late, 2=Whole
+        lpAmp->StageMode    = 0;  // 0=Normal, 1=Stage (compute ST instead of ts,D)
+        lpAmp->AVGmode      = 0;	// 0=Normal, 1=Average Mode , 250 to 2k
+        lpAmp->AppendMode   = 1; // 0=not append, 1=append
+        lpAmp->White2Pink   = 0; // 0=leave unchanged, 1=correct
+        lpAmp->fFS          = 120.0;  // Full Scale in dB-SPL
+        lpAmp->lSampRate    = wav.sampleRate;
+        lpAmp->lN           = IRL;
+        lpAmp->wChannels    = wav.channels;
         strcpy(lpAmp->wTitle, filename);
 
         // Ricerca valori MAX picco

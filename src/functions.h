@@ -1499,16 +1499,7 @@ void SaveResults(drwav* wav,  char* TXTname, char* filename, char* cAP, float* f
 	// ipotizzo quindi che esista già, e cerco di aprirlo in append, se poi non ci riesco lo creero'
 
 	// verifico se il file esiste
-	hResults= fopen(TXTname, "r");
-	Error = GetLastError();
-
-	if (Error == 32) //ERROR_SHARING_VIOLATION
-	{
-		strcpy(ErrorString, TXTname);
-		strcat(ErrorString, " is alredy in use by another process.\nChoose another file, please!\n");
-		printf(ErrorString);
-		return;
-	}
+    hResults= fopen(TXTname, "r");
 	if (hResults == NULL)
 	{
 		// Il file non esiste, debbo crearlo ex-novo
