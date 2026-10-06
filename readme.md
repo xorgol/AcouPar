@@ -4,6 +4,11 @@ AcouPar stands for "Acoustical Parameters" and it is the Command Line version of
 The plugin is meant for computing acoustical parameters according to ISO3382-1.
 This command line utility produces exactly the same results of the plugin.
 
+# Binaries
+Binaries for Windows are available on the [Angelo Farina website](https://www.angelofarina.it/Public/AcouPar/)
+
+# Input formats
+
 AcouPar processes a single or a couple (stereo file)  of Impulse Responses in a wavefile providing different approaches:
  1. One for single or two independent omnidirectional microphones impulse responses
  2. One for ne for WY-Ambix impulse responses
